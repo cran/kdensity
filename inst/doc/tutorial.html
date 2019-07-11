@@ -12,17 +12,17 @@
 
 <meta name="author" content="Jonas Moss" />
 
-<meta name="date" content="2018-02-27" />
+<meta name="date" content="2019-07-11" />
 
 <title>Tutorial for kdensity</title>
 
 
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
+<style type="text/css" data-origin="pandoc">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; position: absolute; }
+a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -35,13 +35,11 @@ code.sourceCode { white-space: pre-wrap; }
 a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
 pre.numberSource a.sourceLine
-  { position: relative; }
-pre.numberSource a.sourceLine:empty
-  { position: absolute; }
+  { position: relative; left: -4em; }
 pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
-    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all;
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -83,7 +81,29 @@ code span.st { color: #4070a0; } /* String */
 code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
 </style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -271,6 +291,9 @@ code > span.al { color: #ff0000; font-weight: bold; }
 code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
+
+
+
 </head>
 
 <body>
@@ -279,124 +302,124 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 <h1 class="title toc-ignore">Tutorial for <code>kdensity</code></h1>
-<h4 class="author"><em>Jonas Moss</em></h4>
-<h4 class="date"><em>2018-02-27</em></h4>
+<h4 class="author">Jonas Moss</h4>
+<h4 class="date">2019-07-11</h4>
 
 
 
-<section id="basic-usage" class="level1">
+<div id="basic-usage" class="section level1">
 <h1>Basic usage</h1>
 <p><code>kdensity</code> is called using a syntax similar to <code>stats::density</code>, but with some additional arguments. A call to <code>kdensity</code> returns a density function (with class <code>kdensity</code>), which can used as ordinary <code>R</code>-function:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(<span class="st">&quot;kdensity&quot;</span>)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">kde =<span class="st"> </span><span class="kw">kdensity</span>(mtcars<span class="op">$</span>mpg, <span class="dt">start =</span> <span class="st">&quot;gumbel&quot;</span>, <span class="dt">kernel =</span> <span class="st">&quot;gaussian&quot;</span>)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">kde</span>(<span class="dv">20</span>)</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co">#&gt; [1] 0.06829002</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(<span class="st">&quot;kdensity&quot;</span>)</a>
+<a class="sourceLine" id="cb1-2" title="2">kde =<span class="st"> </span><span class="kw">kdensity</span>(mtcars<span class="op">$</span>mpg, <span class="dt">start =</span> <span class="st">&quot;gumbel&quot;</span>, <span class="dt">kernel =</span> <span class="st">&quot;gaussian&quot;</span>)</a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw">kde</span>(<span class="dv">20</span>)</a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="co">#&gt; [1] 0.06829002</span></a></code></pre></div>
 <p>Hence it can be used to calculate functionals, such as the expectation:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">integrate</span>(<span class="cf">function</span>(x) x<span class="op">*</span><span class="kw">kde</span>(x), <span class="dt">lower =</span> <span class="op">-</span><span class="ot">Inf</span>, <span class="dt">upper =</span> <span class="ot">Inf</span>)<span class="op">$</span>value </a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">#&gt; [1] 20.15896</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">integrate</span>(<span class="cf">function</span>(x) x<span class="op">*</span><span class="kw">kde</span>(x), <span class="dt">lower =</span> <span class="op">-</span><span class="ot">Inf</span>, <span class="dt">upper =</span> <span class="ot">Inf</span>)<span class="op">$</span>value </a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="co">#&gt; [1] 20.15896</span></a></code></pre></div>
 <p>Plotting works as with <code>stats::density</code>. If <code>kdensity</code> was called with a parametric start, use <code>plot_start = TRUE</code> inside a plotting function in order to plot the estimated parametric start density instead of the kernel density.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">plot</span>(kde, <span class="dt">main =</span> <span class="st">&quot;Miles per Gallon&quot;</span>)</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">lines</span>(kde, <span class="dt">plot_start =</span> <span class="ot">TRUE</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>)</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">rug</span>(mtcars<span class="op">$</span>mpg)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">plot</span>(kde, <span class="dt">main =</span> <span class="st">&quot;Miles per Gallon&quot;</span>)</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="kw">lines</span>(kde, <span class="dt">plot_start =</span> <span class="ot">TRUE</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="kw">rug</span>(mtcars<span class="op">$</span>mpg)</a></code></pre></div>
 <p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
 <p>If the R-package <code>magrittr</code> is installed, you can use pipes to plot:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">library</span>(<span class="st">&quot;magrittr&quot;</span>)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">kde <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="st">  </span><span class="kw">plot</span>(<span class="dt">main =</span> <span class="st">&quot;Miles per Gallon&quot;</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="st">  </span><span class="kw">lines</span>(<span class="dt">plot_start =</span> <span class="ot">TRUE</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">library</span>(<span class="st">&quot;magrittr&quot;</span>)</a>
+<a class="sourceLine" id="cb4-2" title="2">kde <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="st">  </span><span class="kw">plot</span>(<span class="dt">main =</span> <span class="st">&quot;Miles per Gallon&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="st">  </span><span class="kw">lines</span>(<span class="dt">plot_start =</span> <span class="ot">TRUE</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>)</a></code></pre></div>
 <p>The generics <code>coef</code>, <code>logLik</code>, <code>AIC</code> and <code>BIC</code> are supported, but work only on the parametric start.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">coef</span>(kde)</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="co">#&gt;       loc     scale </span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="co">#&gt; 17.321183  4.864584</span></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="kw">logLik</span>(kde)</a>
-<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co">#&gt; 'log Lik.' 1.644676 (df=2)</span></a>
-<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="kw">AIC</span>(kde)</a>
-<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="co">#&gt; [1] 0.710647</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">coef</span>(kde)</a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="co">#&gt;       loc     scale </span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="co">#&gt; 17.321183  4.864584</span></a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="kw">logLik</span>(kde)</a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="co">#&gt; &#39;log Lik.&#39; 1.644676 (df=2)</span></a>
+<a class="sourceLine" id="cb5-6" title="6"><span class="kw">AIC</span>(kde)</a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="co">#&gt; [1] 0.710647</span></a></code></pre></div>
 <p>To view information about the kernel density, use the <code>summary</code> generic.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">summary</span>(kde)</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="co">#&gt; Call: </span></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="co">#&gt; kdensity(x = mtcars$mpg, kernel = &quot;gaussian&quot;, start = &quot;gumbel&quot;)</span></a>
-<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="co">#&gt; Data:        mtcars$mpg (32 obs.)</span></a>
-<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="co">#&gt; Bandwidth:   2.742 ('RHE')</span></a>
-<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="co">#&gt; Support:     (-Inf, Inf)</span></a>
-<a class="sourceLine" id="cb6-9" data-line-number="9"><span class="co">#&gt; Kernel:      gaussian</span></a>
-<a class="sourceLine" id="cb6-10" data-line-number="10"><span class="co">#&gt; Start:       gumbel</span></a>
-<a class="sourceLine" id="cb6-11" data-line-number="11"><span class="co">#&gt; Range:       (10.4, 33.9)</span></a>
-<a class="sourceLine" id="cb6-12" data-line-number="12"><span class="co">#&gt; NAs in data: FALSE</span></a>
-<a class="sourceLine" id="cb6-13" data-line-number="13"><span class="co">#&gt; Adjustment:  1</span></a>
-<a class="sourceLine" id="cb6-14" data-line-number="14"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="co">#&gt; Parameter estimates:</span></a>
-<a class="sourceLine" id="cb6-16" data-line-number="16"><span class="co">#&gt; loc: 17.32</span></a>
-<a class="sourceLine" id="cb6-17" data-line-number="17"><span class="co">#&gt; scale: 4.865</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">summary</span>(kde)</a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="co">#&gt; Call: </span></a>
+<a class="sourceLine" id="cb6-4" title="4"><span class="co">#&gt; kdensity(x = mtcars$mpg, kernel = &quot;gaussian&quot;, start = &quot;gumbel&quot;)</span></a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb6-6" title="6"><span class="co">#&gt; Data:        mtcars$mpg (32 obs.)</span></a>
+<a class="sourceLine" id="cb6-7" title="7"><span class="co">#&gt; Bandwidth:   2.742 (&#39;RHE&#39;)</span></a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="co">#&gt; Support:     (-Inf, Inf)</span></a>
+<a class="sourceLine" id="cb6-9" title="9"><span class="co">#&gt; Kernel:      gaussian</span></a>
+<a class="sourceLine" id="cb6-10" title="10"><span class="co">#&gt; Start:       gumbel</span></a>
+<a class="sourceLine" id="cb6-11" title="11"><span class="co">#&gt; Range:       (10.4, 33.9)</span></a>
+<a class="sourceLine" id="cb6-12" title="12"><span class="co">#&gt; NAs in data: FALSE</span></a>
+<a class="sourceLine" id="cb6-13" title="13"><span class="co">#&gt; Adjustment:  1</span></a>
+<a class="sourceLine" id="cb6-14" title="14"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb6-15" title="15"><span class="co">#&gt; Parameter estimates:</span></a>
+<a class="sourceLine" id="cb6-16" title="16"><span class="co">#&gt; loc: 17.32</span></a>
+<a class="sourceLine" id="cb6-17" title="17"><span class="co">#&gt; scale: 4.865</span></a></code></pre></div>
 <p>Access members of the kernel density with <code>$</code> or <code>[[</code>.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">kde<span class="op">$</span>start_str </a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co">#&gt; [1] &quot;gumbel&quot;</span></a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">kde[[<span class="st">&quot;x&quot;</span>]]</a>
-<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="co">#&gt;  [1] 21.0 21.0 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 17.8 16.4 17.3 15.2</span></a>
-<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="co">#&gt; [15] 10.4 10.4 14.7 32.4 30.4 33.9 21.5 15.5 15.2 13.3 19.2 27.3 26.0 30.4</span></a>
-<a class="sourceLine" id="cb7-6" data-line-number="6"><span class="co">#&gt; [29] 15.8 19.7 15.0 21.4</span></a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">kde<span class="op">$</span>start_str </a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="co">#&gt; [1] &quot;gumbel&quot;</span></a>
+<a class="sourceLine" id="cb7-3" title="3">kde[[<span class="st">&quot;x&quot;</span>]]</a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="co">#&gt;  [1] 21.0 21.0 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 17.8 16.4 17.3 15.2</span></a>
+<a class="sourceLine" id="cb7-5" title="5"><span class="co">#&gt; [15] 10.4 10.4 14.7 32.4 30.4 33.9 21.5 15.5 15.2 13.3 19.2 27.3 26.0 30.4</span></a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="co">#&gt; [29] 15.8 19.7 15.0 21.4</span></a></code></pre></div>
 <p>To make changes to the kernel density estimator, you can use the generic <code>update</code> function, replace values with <code>$</code>, or make a new one.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">kde<span class="op">$</span>bw =<span class="st"> &quot;RHE&quot;</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw">update</span>(kde, <span class="dt">start =</span> <span class="st">&quot;normal&quot;</span>)</a></code></pre></div>
-</section>
-<section id="custom-densities-and-kernels" class="level1">
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">kde<span class="op">$</span>bw =<span class="st"> &quot;RHE&quot;</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="kw">update</span>(kde, <span class="dt">start =</span> <span class="st">&quot;normal&quot;</span>)</a></code></pre></div>
+</div>
+<div id="custom-densities-and-kernels" class="section level1">
 <h1>Custom densities and kernels</h1>
-<section id="parametric-starts" class="level2">
+<div id="parametric-starts" class="section level2">
 <h2>Parametric starts</h2>
 <p>You must supply two functions and one vector to <code>kdensity</code> in order to use a custom parametric start. The first is a <code>density</code> function, the second is a function that estimates the named parameters of the density, and the third is the support of the density.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">normal =<span class="st"> </span><span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2">  <span class="dt">density =</span> dnorm,</a>
-<a class="sourceLine" id="cb9-3" data-line-number="3">  </a>
-<a class="sourceLine" id="cb9-4" data-line-number="4">  <span class="dt">estimator =</span> <span class="cf">function</span>(data) {</a>
-<a class="sourceLine" id="cb9-5" data-line-number="5">    <span class="kw">c</span>(<span class="dt">mean  =</span> <span class="kw">mean</span>(data),</a>
-<a class="sourceLine" id="cb9-6" data-line-number="6">      <span class="dt">sd    =</span> <span class="kw">sd</span>(data))</a>
-<a class="sourceLine" id="cb9-7" data-line-number="7">  },</a>
-<a class="sourceLine" id="cb9-8" data-line-number="8">  </a>
-<a class="sourceLine" id="cb9-9" data-line-number="9">  <span class="dt">support   =</span> <span class="kw">c</span>(<span class="op">-</span><span class="ot">Inf</span>, <span class="ot">Inf</span>)</a>
-<a class="sourceLine" id="cb9-10" data-line-number="10">)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">normal =<span class="st"> </span><span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb9-2" title="2">  <span class="dt">density =</span> dnorm,</a>
+<a class="sourceLine" id="cb9-3" title="3">  </a>
+<a class="sourceLine" id="cb9-4" title="4">  <span class="dt">estimator =</span> <span class="cf">function</span>(data) {</a>
+<a class="sourceLine" id="cb9-5" title="5">    <span class="kw">c</span>(<span class="dt">mean  =</span> <span class="kw">mean</span>(data),</a>
+<a class="sourceLine" id="cb9-6" title="6">      <span class="dt">sd    =</span> <span class="kw">sd</span>(data))</a>
+<a class="sourceLine" id="cb9-7" title="7">  },</a>
+<a class="sourceLine" id="cb9-8" title="8">  </a>
+<a class="sourceLine" id="cb9-9" title="9">  <span class="dt">support   =</span> <span class="kw">c</span>(<span class="op">-</span><span class="ot">Inf</span>, <span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb9-10" title="10">)</a></code></pre></div>
 <p>The density function must take the data as its first argument, and all its parameters must be named. In addition, the function <code>estimator</code> must return a vector containing named parameters that partially match the parameter names of the density function. For instance, the arguments of <code>dnorm</code> are <code>x, mean, sd, log</code>, where <code>log = TRUE</code> means that the logarithm of the density is returned. Since <code>estimator</code> returns a named vector with names <code>mean</code> and <code>sd</code>, the names are completely matched.</p>
 <p>The estimator function doesn’t need to be simple, as the next example shows.</p>
-<section id="example-a-skew-hyperbolic-t-distribution-start" class="level3">
+<div id="example-a-skew-hyperbolic-t-distribution-start" class="section level3">
 <h3>Example: A skew hyperbolic t-distribution start</h3>
 <p>The built-in data set <code>LakeHuron</code> contains annual measurements of the water level of Lake Huron from 1875 to 1972, measured in feet. We will take a look at the distribution of differences in water level across two consecutive years. Since the data are supported on the real line and there is no good reason to assume anything else, we will use a normal start.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">LH =<span class="st"> </span><span class="kw">diff</span>(LakeHuron)</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">kde_normal =<span class="st"> </span><span class="kw">kdensity</span>(LH, <span class="dt">start =</span> <span class="st">&quot;normal&quot;</span>)</a>
-<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="kw">plot</span>(kde_normal, <span class="dt">lwd =</span> <span class="dv">2</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>,</a>
-<a class="sourceLine" id="cb10-4" data-line-number="4">     <span class="dt">main =</span> <span class="st">&quot;Lake Huron differences&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">LH =<span class="st"> </span><span class="kw">diff</span>(LakeHuron)</a>
+<a class="sourceLine" id="cb10-2" title="2">kde_normal =<span class="st"> </span><span class="kw">kdensity</span>(LH, <span class="dt">start =</span> <span class="st">&quot;normal&quot;</span>)</a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="kw">plot</span>(kde_normal, <span class="dt">lwd =</span> <span class="dv">2</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>,</a>
+<a class="sourceLine" id="cb10-4" title="4">     <span class="dt">main =</span> <span class="st">&quot;Lake Huron differences&quot;</span>)</a></code></pre></div>
 <p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
 <p>The density is clearly non-normal. Still, it looks fairly regular, and it should be possible to model it parametrically with some success. One of many parametric families of distributions more flexible than the normal family is the <em>skew hyperbolic t-distribution</em>, which is implemented in the <code>R</code> package <code>SkewHyperbolic</code>. This package contains the density function <code>dskewhyp</code> and a maximum likelihood estimating function in <code>skewhypFit</code>. Using these functions, we make the following list:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">skew_hyperbolic =<span class="st"> </span><span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb11-2" data-line-number="2">  <span class="dt">density   =</span> SkewHyperbolic<span class="op">::</span>dskewhyp,</a>
-<a class="sourceLine" id="cb11-3" data-line-number="3">  </a>
-<a class="sourceLine" id="cb11-4" data-line-number="4">  <span class="dt">estimator =</span> <span class="cf">function</span>(x) {</a>
-<a class="sourceLine" id="cb11-5" data-line-number="5">    SkewHyperbolic<span class="op">::</span><span class="kw">skewhypFit</span>(x, <span class="dt">printOut =</span> <span class="ot">FALSE</span>)<span class="op">$</span>param</a>
-<a class="sourceLine" id="cb11-6" data-line-number="6">  },</a>
-<a class="sourceLine" id="cb11-7" data-line-number="7">  </a>
-<a class="sourceLine" id="cb11-8" data-line-number="8">  <span class="dt">support   =</span> <span class="kw">c</span>(<span class="op">-</span><span class="ot">Inf</span>, <span class="ot">Inf</span>)</a>
-<a class="sourceLine" id="cb11-9" data-line-number="9">)</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">skew_hyperbolic =<span class="st"> </span><span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb11-2" title="2">  <span class="dt">density   =</span> SkewHyperbolic<span class="op">::</span>dskewhyp,</a>
+<a class="sourceLine" id="cb11-3" title="3">  </a>
+<a class="sourceLine" id="cb11-4" title="4">  <span class="dt">estimator =</span> <span class="cf">function</span>(x) {</a>
+<a class="sourceLine" id="cb11-5" title="5">    SkewHyperbolic<span class="op">::</span><span class="kw">skewhypFit</span>(x, <span class="dt">printOut =</span> <span class="ot">FALSE</span>)<span class="op">$</span>param</a>
+<a class="sourceLine" id="cb11-6" title="6">  },</a>
+<a class="sourceLine" id="cb11-7" title="7">  </a>
+<a class="sourceLine" id="cb11-8" title="8">  <span class="dt">support   =</span> <span class="kw">c</span>(<span class="op">-</span><span class="ot">Inf</span>, <span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb11-9" title="9">)</a></code></pre></div>
 <p>Now we are ready to run <code>kdensity</code> and do some plotting. Note the <code>plot</code> option <code>plot_start = TRUE</code>. With this option on, the estimated parametric density is plotted without any non-parametric correction.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">kde_skewhyp =<span class="st"> </span><span class="kw">kdensity</span>(LH, <span class="dt">start =</span> skew_hyperbolic)</a>
-<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="kw">plot</span>(kde_skewhyp, <span class="dt">lwd =</span> <span class="dv">2</span>, <span class="dt">col =</span> <span class="st">&quot;blue&quot;</span>,</a>
-<a class="sourceLine" id="cb12-3" data-line-number="3">     <span class="dt">main =</span> <span class="st">&quot;Lake Huron differences&quot;</span>)</a>
-<a class="sourceLine" id="cb12-4" data-line-number="4"><span class="kw">lines</span>(kde_normal)</a>
-<a class="sourceLine" id="cb12-5" data-line-number="5"><span class="kw">lines</span>(kde_skewhyp, <span class="dt">plot_start =</span> <span class="ot">TRUE</span>, <span class="dt">lty =</span> <span class="dv">2</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb12-6" data-line-number="6"><span class="kw">rug</span>(LH)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">kde_skewhyp =<span class="st"> </span><span class="kw">kdensity</span>(LH, <span class="dt">start =</span> skew_hyperbolic)</a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="kw">plot</span>(kde_skewhyp, <span class="dt">lwd =</span> <span class="dv">2</span>, <span class="dt">col =</span> <span class="st">&quot;blue&quot;</span>,</a>
+<a class="sourceLine" id="cb12-3" title="3">     <span class="dt">main =</span> <span class="st">&quot;Lake Huron differences&quot;</span>)</a>
+<a class="sourceLine" id="cb12-4" title="4"><span class="kw">lines</span>(kde_normal)</a>
+<a class="sourceLine" id="cb12-5" title="5"><span class="kw">lines</span>(kde_skewhyp, <span class="dt">plot_start =</span> <span class="ot">TRUE</span>, <span class="dt">lty =</span> <span class="dv">2</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb12-6" title="6"><span class="kw">rug</span>(LH)</a></code></pre></div>
 <p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
 <p>Since all the curves are in agreement, we are justified in using the skew hyperbolic t-distribution for further analysis.</p>
-</section>
-</section>
-<section id="kernels" class="level2">
+</div>
+</div>
+<div id="kernels" class="section level2">
 <h2>Kernels</h2>
 <p>If you want to make custom kernel, you will need to supply the kernel function, with arguments <code>y, x, h</code>. Here <code>x</code> is the random data you put into <code>kdensity</code>, <code>h</code> is the final bandwidth, and <code>y</code> is the point you want to evaluate at. The kernel is called as <code>1/h*kernel(y, x, h)</code>, and should be vectorized in both <code>x</code> and <code>y</code>. In addition to the kernel function, you must supply a <code>support</code> argument, which states the domain of definition of the kernel. For instance, the <code>gcopula</code> kernel is defined on <code>c(0, 1)</code>. In addition, you can optionally supply the standard deviation of the kernel. This is only used for symmetric kernels, and is useful since it makes them comparable. For example, the implementation of the <code>gaussian</code> kernel is</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">gaussian =<span class="st"> </span><span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb13-2" data-line-number="2">  <span class="dt">kernel  =</span> <span class="cf">function</span>(y, x, h) <span class="kw">dnorm</span>((y<span class="op">-</span>x)<span class="op">/</span>h),</a>
-<a class="sourceLine" id="cb13-3" data-line-number="3">  <span class="dt">sd      =</span> <span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb13-4" data-line-number="4">  <span class="dt">support =</span> <span class="kw">c</span>(<span class="op">-</span><span class="ot">Inf</span>, <span class="ot">Inf</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">gaussian =<span class="st"> </span><span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb13-2" title="2">  <span class="dt">kernel  =</span> <span class="cf">function</span>(y, x, h) <span class="kw">dnorm</span>((y<span class="op">-</span>x)<span class="op">/</span>h),</a>
+<a class="sourceLine" id="cb13-3" title="3">  <span class="dt">sd      =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb13-4" title="4">  <span class="dt">support =</span> <span class="kw">c</span>(<span class="op">-</span><span class="ot">Inf</span>, <span class="ot">Inf</span>))</a></code></pre></div>
 <p>Custom kernels can be complicated, and do not have to be symmetric.</p>
-</section>
-</section>
+</div>
+</div>
 
 
 

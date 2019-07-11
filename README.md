@@ -7,9 +7,13 @@
 Status](https://travis-ci.org/JonasMoss/kdensity.svg?branch=master)](https://travis-ci.org/JonasMoss/kdensity)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/JonasMoss/kdensity?branch=master&svg=true)](https://ci.appveyor.com/project/JonasMoss/kdensity)
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/kdensity)](http://cran.r-project.org/package=kdensity)
+[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/kdensity)](https://cran.r-project.org/package=kdensity)
 [![Coverage
 Status](https://codecov.io/gh/JonasMoss/kdensity/branch/master/graph/badge.svg)](https://codecov.io/gh/JonasMoss/kdensity?branch=master)
+[![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![DOI](https://zenodo.org/badge/120678148.svg)](https://zenodo.org/badge/latestdoi/120678148)
 
 An `R` package for univariate kernel density estimation with parametric
 starts and asymmetric kernels.
@@ -39,16 +43,18 @@ often superior to ordinary kernel density estimation.
 
 ## Installation
 
-First you need to install the package `devtools` from `CRAN`. From
-inside `R`, use the following command.
+From inside `R`, use one of the following commands:
 
 ``` r
+# For the CRAN release
+install.packages("kdensity")
+# For the development version from GitHub:
+# install.packages("devtools")
 devtools::install_github("JonasMoss/kdensity")
 ```
 
-This installs the latest version of the package from GitHub. Call the
-`library` function and use it just like `stats:density`, but with
-optional additional arguments.
+Call the `library` function and use it just like `stats:density`, but
+with optional additional arguments.
 
 ``` r
 library("kdensity")
@@ -65,7 +71,7 @@ density estimation, so that your actual kernel density estimation will
 be a correction to the original parametric estimate. This is a good idea
 because the resulting estimator will be better than an ordinary kernel
 density estimator whenever the true density is close to your suggestion;
-and the estimator can be superior to the ordinary kernal density
+and the estimator can be superior to the ordinary kernel density
 estimator even when the suggestion is pretty far off.
 
 In addition to parametric starts, the package implements some
@@ -148,13 +154,14 @@ AIC(kde)
     (1995): 882-904.](https://projecteuclid.org/euclid.aos/1176324627).
 
   - [Jones, M. C., and D. A. Henderson. “Miscellanea kernel-type density
-    estimation on the unit interval.” Biometrika 94.4
-    (2007): 977-984.](https://academic.oup.com/biomet/article-abstract/94/4/977/246269).
+    estimation on the unit interval.” Biometrika 94.4 (2007):
+    977-984.](https://academic.oup.com/biomet/article-abstract/94/4/977/246269).
 
   - [Chen, Song Xi. “Probability density function estimation using gamma
     kernels.” Annals of the Institute of Statistical Mathematics 52.3
-    (2000): 471-480.](https://link.springer.com/article/10.1023/A:1004165218295).
+    (2000):
+    471-480.](https://link.springer.com/article/10.1023/A:1004165218295).
 
   - [Chen, Song Xi. “Beta kernel estimators for density functions.”
-    Computational Statistics & Data Analysis 31.2
-    (1999): 131-145.](https://www.sciencedirect.com/science/article/pii/S0167947399000109)
+    Computational Statistics & Data Analysis 31.2 (1999):
+    131-145.](https://www.sciencedirect.com/science/article/pii/S0167947399000109)
