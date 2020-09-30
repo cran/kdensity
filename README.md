@@ -3,10 +3,8 @@
 
 # kdensity <img src="man/figures/logo.png" align="right" width="247" height="70" />
 
-[![Build
-Status](https://travis-ci.org/JonasMoss/kdensity.svg?branch=master)](https://travis-ci.org/JonasMoss/kdensity)
-[![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/github/JonasMoss/kdensity?branch=master&svg=true)](https://ci.appveyor.com/project/JonasMoss/kdensity)
+[![R build
+status](https://github.com/JonasMoss/kdensity/workflows/R-CMD-check/badge.svg)](https://github.com/JonasMoss/kdensity/actions)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/kdensity)](https://cran.r-project.org/package=kdensity)
 [![Coverage
 Status](https://codecov.io/gh/JonasMoss/kdensity/branch/master/graph/badge.svg)](https://codecov.io/gh/JonasMoss/kdensity?branch=master)
@@ -18,6 +16,11 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 An `R` package for univariate kernel density estimation with parametric
 starts and asymmetric kernels.
 
+## News
+
+`kdensity` is now linked to `univariateML`, meaning it supports the
+approximately 30+ parametric starts from that package\!
+
 ## Overview
 
 kdensity is an implementation of univariate kernel density estimation
@@ -26,20 +29,39 @@ function is `kdensity`, which is has approximately the same syntax as
 `stats::density`. Its new functionality is:
 
   - `kdensity` has built-in support for many *parametric starts*, such
-    as `normal` and `gamma`, but you can also supply your own.
+    as `normal` and `gamma`, but you can also supply your own. For a
+    list of supported parametric starts, see the readme of
+    [`univariateML`](https://github.com/JonasMoss/univariateML).
   - It supports several asymmetric kernels ones such as `gcopula` and
     `gamma` kernels, but also the common symmetric ones. In addition,
     you can also supply your own kernels.
   - A selection of choices for the bandwidth function `bw`, again
     including an option to specify your own.
-  - The returned value is callable: The density estimator returns a
-    density function when called.
+  - The returned value is density function. This can be used for
+    e.g. numerical integration, numerical differentiation, and point
+    evaluations.
 
 A reason to use `kdensity` is to avoid *boundary bias* when estimating
 densities on the unit interval or the positive half-line. Asymmetric
 kernels such as `gamma` and `gcopula` are designed for this purpose. The
 support for parametric starts allows you to easily use a method that is
 often superior to ordinary kernel density estimation.
+
+Several `R` packages deal with kernel estimation. For an overview see
+[Deng & Hadley Wickham
+(2011)](https://vita.had.co.nz/papers/density-estimation.pdf). While no
+other `R` package handles density estimation with parametric starts,
+several packages supports methods that handle boundary bias.
+[`evmix`](http://www.math.canterbury.ac.nz/~c.scarrott/evmix/) provides
+a variety of boundary bias correction methods in the `bckden` function.
+[`kde1d`](https://github.com/tnagler/kde1d) corrects for boundary bias
+using transformed univariate local polynomial kernel density estimation.
+[`logKDE`](https://github.com/andrewthomasjones/logKDE) corrects for
+boundary bias on the half line using a logarithmic transform.
+[`ks`](https://CRAN.R-project.org/package=ks) supports boundary
+correction through the `kde.boundary` function, while
+[`Ake`](https://CRAN.R-project.org/package=Ake) corrects for boundary
+bias using tailored kernel functions.
 
 ## Installation
 
@@ -53,7 +75,9 @@ install.packages("kdensity")
 devtools::install_github("JonasMoss/kdensity")
 ```
 
-Call the `library` function and use it just like `stats:density`, but
+## Usage Example
+
+Call the `library` function and use it just like `stats::density`, but
 with optional additional arguments.
 
 ``` r
@@ -68,11 +92,12 @@ Hjort and Glad in [Nonparametric Density Estimation with a Parametric
 Start (1995)](https://projecteuclid.org/euclid.aos/1176324627). The idea
 is to start out with a parametric density before you do your kernel
 density estimation, so that your actual kernel density estimation will
-be a correction to the original parametric estimate. This is a good idea
-because the resulting estimator will be better than an ordinary kernel
-density estimator whenever the true density is close to your suggestion;
-and the estimator can be superior to the ordinary kernel density
-estimator even when the suggestion is pretty far off.
+be a correction to the original parametric estimate. The resulting
+estimator will outperform the ordinary kernel density estimator in terms
+of asymptotic integrated mean squared error whenever the true density is
+close to your suggestion; and the estimator can be superior to the
+ordinary kernel density estimator even when the suggestion is pretty far
+off.
 
 In addition to parametric starts, the package implements some
 *asymmetric kernels*. These kernels are useful when modelling data with
@@ -110,27 +135,32 @@ The function `kdensity` takes some `data`, a kernel `kernel` and a
 parametric start `start`. You can optionally specify the `support`
 parameter, which is used to find the normalizing constant.
 
-The following example uses the  data set plots both a gamma-kernel
-density estimate with a gamma start (black) and the the fully parametric
-gamma density. The underlying parameter estimates are always maximum
-likelood.
+The following example uses the  data set. The black curve is a
+gamma-kernel density estimate with a gamma start, the red curve a fully
+parametric gamma density and and the blue curve an ordinary `density`
+estimate. Notice the boundary bias of the ordinary `density` estimator.
+The underlying parameter estimates are always maximum likelilood.
 
 ``` r
 library("kdensity")
 kde = kdensity(airquality$Wind, start = "gamma", kernel = "gamma")
 plot(kde, main = "Wind speed (mph)")
 lines(kde, plot_start = TRUE, col = "red")
+lines(density(airquality$Wind, adjust = 2), col = "blue")
 rug(airquality$Wind)
 ```
 
 <img src="man/figures/README-example-1.png" width="750px" />
 
-Since the return value of `kdensity` is a function, it is callable, as
-in:
+Since the return value of `kdensity` is a function, `kde` is callable
+and can be used as any density function in `R` (such as `stats::dnorm`).
+For example, you can do:
 
 ``` r
 kde(10)
 #> [1] 0.09980471
+integrate(kde, lower = 0, upper = 1) # The cumulative distribution up to 1.
+#> 1.27532e-05 with absolute error < 2.2e-19
 ```
 
 You can access the parameter estimates by using `coef`. You can also
@@ -139,13 +169,21 @@ start distribution.
 
 ``` r
 coef(kde)
-#>     shape      rate 
-#> 7.1872898 0.7217954
+#> Maximum likelihood estimates for the Gamma model 
+#>  shape    rate  
+#> 7.1873  0.7218
 logLik(kde)
 #> 'log Lik.' 12.33787 (df=2)
 AIC(kde)
 #> [1] -20.67574
 ```
+
+## How to Contribute or Get Help
+
+If you encounter a bug, have a feature request or need some help, open a
+[Github issue](https://github.com/JonasMoss/kdensity/issues). Create a
+pull requests to contribute. This project follows a [Contributor Code of
+Conduct](https://www.contributor-covenant.org/version/1/4/code-of-conduct/).
 
 ## References
 

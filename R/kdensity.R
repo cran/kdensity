@@ -1,17 +1,17 @@
 #' Parametrically guided kernel density estimation
 #'
-#' \code{kdensity} computes a parametrically guided kernel density estimate
+#' `kdensity` computes a parametrically guided kernel density estimate
 #' for univariate data. It supports asymmetric kernels and parametric starts
-#' through the \code{kernel} and \code{start} arguments.
+#' through the `kernel` and `start` arguments.
 #'
-#' The default values for \code{bw}, \code{kernel}, \code{start}, and
-#' \code{support} are interdependent, and are chosen to make sense. E.g.,
-#' the default value for \code{support} when \code{start = beta} is
-#' \code{c(0, 1)}.
+#' The default values for `bw`, `kernel`, `start`, and
+#' `support` are interdependent, and are chosen to make sense. E.g.,
+#' the default value for `support` when `start = beta` is
+#' `c(0, 1)`.
 #'
-#' The \code{start} argument defaults to \code{uniform}, which corresponds
+#' The `start` argument defaults to `uniform`, which corresponds
 #' to ordinary kernel density estimation. The typical default value for
-#' \code{kernel} is \code{gaussian}.
+#' `kernel` is `gaussian`.
 #'
 #' @export
 #'
@@ -19,51 +19,56 @@
 #'
 #' @param bw A bandwidth function. Can be either a string, a custom-made
 #' function, or a double. The supported bandwidth functions are documented
-#' in \code{\link{bandwidths}}.
+#' in [bandwidths()].
 #'
-#' @param adjust An adjustment constant, so that \code{h = adjust*bw*sd}, where \code{sd}
+#' @param adjust An adjustment constant, so that `h = adjust*bw*sd`, where `sd`
 #' varies with the chosen kernel.
 #'
 #' @param kernel The kernel function. Can be chosen from the list of built-in
-#' kernels or be custom-made. See \code{\link{kernels}} for details.
+#' kernels or be custom-made. See [kernels()] for details.
 #'
 #' @param start Parametric start. Can be chosen from the list of built-in
-#' parametric starts or be custom-made. See \code{\link{parametric_starts}} for
+#' parametric starts or be custom-made. See [parametric_starts()] for
 #' details.
 #'
 #' @param support The support of the data. Must be compatible with the supplied
-#' \code{x} and the supplied \code{start} and \code{kernel}. Is used to find the
-#' normalization constant, see \code{normalized}.
+#' `x` and the supplied `start` and `kernel`. Is used to find the
+#' normalization constant, see `normalized`.
 #'
-#' @param na.rm Logical; if \code{TRUE}, \code{NA}s will be removed from \code{x}.
+#' @param na.rm Logical; if `TRUE`, `NA`s will be removed from `x`.
 #'
-#' @param normalized Logical; if \code{TRUE}, the density is normalized.
+#' @param normalized Logical; if `TRUE`, the density is normalized.
 #'
 #' @param tolerance Numeric; the relative error to tolerate in normalization.
 #'
-#' @return \code{kdensity} returns an S3 function object of
-#' \code{\link[base]{class}} "kdensity". This is a callable function with the
+#' @return `kdensity` returns an S3 function object of
+#' [base::class()] "kdensity". This is a callable function with the
 #' following elements, accessible by '$':
 #' \describe{
-#'   \item{\code{bw_str, bw, adjust, h}}{The bandwidth function, the resulting
-#'               bandwidth, the \code{adjust} argument, and the adjusted
+#'   \item{`x`}{The data supplied in `x`.}
+#'   \item{`bw_str, bw, adjust, h`}{The bandwidth function, the resulting
+#'               bandwidth, the `adjust` argument, and the adjusted
 #'               bandwidth.}
-#'   \item{\code{kernel, start, support }}{Name of the kernel, name of the
-#'               parametric start, and the support of the density.}
-#'   \item{\code{data.name, n, range, has.na}}{Name of the data, number of
-#'               observations, the range of the data, and whether the data
-#'               \code{x} contained \code{NA} values.}
-#'   \item{\code{call}}{The \code{call} to \code{kdensity}.}
-#'   \item{\code{estimates}}{Named numeric vector containing the parameter
+#'   \item{`kernel_str, kernel, start, start_str, support`}{Name of the kernel,
+#'               the kernel object, name of the parametric start, the start object,
+#'               and the support of the density.}
+#'   \item{`data.name, n, range, has.na, na.rm, normalized`}{Name of the data, number of
+#'               observations, the range of the data, whether the data
+#'               `x` contained `NA` values, whether na.rm is `TRUE`
+#'               or not, and whether the density is normalized.}
+#'   \item{`call`}{The `call` to `kdensity`.}
+#'   \item{`estimates`}{Named numeric vector containing the parameter
 #'               estimates from the parametric start.}
+#'   \item{`logLik`}{The log-likelihood of the parametric starts. Is `NA`
+#'               for the uniform start.}
 #'
 #' }
 #'
 #'
-#' @details If \code{normalized} is \code{FALSE} and \code{start != "uniform"}, the resulting
+#' @details If `normalized` is `FALSE` and `start != "uniform"`, the resulting
 #' density will not integrate to 1 in general.
 #'
-#' @seealso The \code{stats} package function \code{\link[stats]{density}}.
+#' @seealso The `stats` package function [stats::density()].
 #' @references
 #'   Hjort, Nils Lid, and Ingrid K. Glad. "Nonparametric density estimation with a parametric start." The Annals of Statistics (1995): 882-904.
 #'
@@ -117,10 +122,10 @@ kdensity = function(x, bw = NULL, adjust = 1, kernel = NULL, start = NULL,
   data.name = deparse(substitute(x))
   has.na = anyNA(x)
 
-  if(has.na) {
-    if(!na.rm) stop("x contains NAs and na.rm = FALSE.")
-    x = x[!is.na(x)]
-  }
+  assertthat::assert_that(!(has.na & !na.rm),
+                          msg = "x contains NAs and na.rm = FALSE.")
+
+  x = x[!is.na(x)] # This line is reached only if (has.na & !na.rm) is FALSE.
 
   ## 'kernel', 'start' and 'bw' can be custom made: In this case, they must
   ## be added to their environments.
@@ -144,7 +149,7 @@ kdensity = function(x, bw = NULL, adjust = 1, kernel = NULL, start = NULL,
   ## The case of bw == Inf is special! In this case, we return the parametric
   ## start itself.
 
-  ## Now we massage and handle the combinations of kernel, start and support.
+  ## Now we handle the combinations of kernel, start and support.
   ## This is fancy defaults management.
   kss_list = get_kernel_start_support(kernel, start, support)
 

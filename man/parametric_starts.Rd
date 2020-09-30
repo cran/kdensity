@@ -9,36 +9,28 @@ is used as a starting point in \code{kdensity}. Several parametric starts
 are implemented, all with maximum likelihood estimation. Custom-made
 parametric starts are possible, see the Structure section.
 }
-\section{Built-in starts}{
-
-
-
-   \code{uniform, constant}: Selecting the uniform start makes \code{kdensity}
-   act like an ordinary kernel density estimator. The default value for any
-   choice of kernel or support.
-   \code{gaussian, normal}: The normal distribution. A natural choice for
-   densities on the real line \eqn{(-\infty, \infty)}.
-   \code{laplace, gumbel}: Distributions on  \eqn{(-\infty, \infty)}.
-   \code{exponential, gamma, lognormal, inverse_gaussian, weibull}: Densities
-   supported on the positive real line \eqn{(0, \infty)}.
-   \code{beta, kumaraswamy}: The beta and Kumaraswamy distributions,
-   supported on the unit interval \eqn{[0, 1]}.
-   \code{pareto}: The Pareto distribution, supported on \eqn{[1, \infty)}.
-   Has heavy tails.
-}
-
 \section{Structure}{
 
-  The parametric start contains three elements: The density function, an
-  estimation function, and the support of the density. The parameters of
-  the density function must partially match the parameters of the estimator
-  function. The estimator function takes one argument, a numeric vector,
-  which is passed from \code{kdensity}.
+The parametric start contains three elements: The density function, an
+estimation function, and the support of the density. The parameters of
+the density function must partially match the parameters of the estimator
+function. The estimator function takes one argument, a numeric vector,
+which is passed from \code{kdensity}.
+}
+
+\section{Supported parametric starts}{
+ \code{kdensity} supports more than
+20 built-in starts from the \link{univariateML} package, see
+\code{univariateML::univariateML_models} for a list. Densities with variable
+support, \code{power}, are not supported. The \code{pareto} density has its
+support fixed to \verb{(1,Inf)}. The
+options \verb{uniform, constant} makes \code{kdensity} estimate a kernel
+density without parametric starts.
 }
 
 \examples{
 start_exponential = list(
- density = dexp,
+ density = stats::dexp,
  estimator = function(data) {
    c(rate = 1/mean(data))
  },
@@ -56,5 +48,5 @@ start_inverse_gaussian = list(
 
 }
 \seealso{
-\code{\link{kdensity}}; \code{\link{kernels}}; \code{\link{bandwidths}}
+\code{\link[=kdensity]{kdensity()}}; \code{\link[=kernels]{kernels()}}; \code{\link[=bandwidths]{bandwidths()}}
 }

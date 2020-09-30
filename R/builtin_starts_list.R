@@ -1,13 +1,10 @@
-starts_environment = new.env(hash = FALSE)
-
 #' Parametric starts
 #'
 #' A parametric start is a density function with an associated estimator which
-#' is used as a starting point in \code{kdensity}. Several parametric starts
+#' is used as a starting point in `kdensity`. Several parametric starts
 #' are implemented, all with maximum likelihood estimation. Custom-made
 #' parametric starts are possible, see the Structure section.
 #'
-#' @section Built-in starts:
 #' @usage NULL
 #' @format NULL
 #' @section Structure:
@@ -15,10 +12,17 @@ starts_environment = new.env(hash = FALSE)
 #'   estimation function, and the support of the density. The parameters of
 #'   the density function must partially match the parameters of the estimator
 #'   function. The estimator function takes one argument, a numeric vector,
-#'   which is passed from \code{kdensity}.
+#'   which is passed from `kdensity`.
 #'
+#' @section Supported parametric starts: `kdensity` supports more than
+#'    20 built-in starts from the [univariateML] package, see
+#'    `univariateML::univariateML_models` for a list. Densities with variable
+#'    support, `power`, are not supported. The `pareto` density has its
+#'    support fixed to `(1,Inf)`. The
+#'    options `uniform, constant` makes `kdensity` estimate a kernel
+#'    density without parametric starts.
 #' @examples start_exponential = list(
-#'  density = dexp,
+#'  density = stats::dexp,
 #'  estimator = function(data) {
 #'    c(rate = 1/mean(data))
 #'  },
@@ -34,140 +38,68 @@ starts_environment = new.env(hash = FALSE)
 #'  support = c(0, Inf)
 #' )
 #'
-#' @seealso \code{\link{kdensity}}; \code{\link{kernels}}; \code{\link{bandwidths}}
-#'
-#' @section Built-in starts:
-#'    \code{uniform, constant}: Selecting the uniform start makes \code{kdensity}
-#'    act like an ordinary kernel density estimator. The default value for any
-#'    choice of kernel or support.
-#'    \code{gaussian, normal}: The normal distribution. A natural choice for
-#'    densities on the real line \eqn{(-\infty, \infty)}.
-#'    \code{laplace, gumbel}: Distributions on  \eqn{(-\infty, \infty)}.
-#'    \code{exponential, gamma, lognormal, inverse_gaussian, weibull}: Densities
-#'    supported on the positive real line \eqn{(0, \infty)}.
-#'    \code{beta, kumaraswamy}: The beta and Kumaraswamy distributions,
-#'    supported on the unit interval \eqn{[0, 1]}.
-#'    \code{pareto}: The Pareto distribution, supported on \eqn{[1, \infty)}.
-#'    Has heavy tails.
+#' @seealso [kdensity()]; [kernels()]; [bandwidths()]
 #' @name parametric_starts
 NULL
 
-starts_environment$uniform = list(
+parser = function(str) parse(text = str)[[1]]
+
+get_density_and_support = function(fun) {
+  for(i in seq(length(body(fun)))) {
+
+    if(length(body(fun)[[i]]) > 1) {
+      if(body(fun)[[i]][[2]] == 'attr(object, "density")') {
+        density = body(fun)[[i]][[3]]
+      } else if (body(fun)[[i]][[2]] == 'attr(object, "support")') {
+        support = body(fun)[[i]][[3]]
+      }
+    }
+  }
+  list(density = eval(parser(density)), support = support)
+}
+
+starts = new.env(hash = FALSE)
+
+starts = lapply(univariateML::univariateML_models, function(name) {
+  fun = eval(parser(paste0("univariateML::ml", name)))
+  c(estimator = eval(parser(paste0("univariateML::ml",name))),
+    get_density_and_support(fun))
+})
+
+names(starts) = univariateML::univariateML_models
+
+## Some densities have variable supports, which is not supported yet.
+starts$pareto = list(
+  density   = function(x, alpha) alpha*x^(-alpha-1),
+  estimator = function(x) 1/mean(log(x)),
+  support   = c(1, Inf)
+)
+
+starts$power = NULL
+
+## The uniform distribution is interpreted as uniform over the real line.
+starts$unif= list(
   density   = function(x) rep(1, length(x)),
   estimator = function(data) NULL,
   support   = c(-Inf, Inf)
 )
 
-starts_environment$constant = starts_environment$uniform
+starts$constant = starts$unif
+starts$uniform = starts$unif
 
-starts_environment$normal = list(
-  density = dnorm,
-  estimator = function(data) {
-    c(mean = mean(data),
-      sd   = sd(data))
-  },
-  support   = c(-Inf, Inf)
-)
+## Aliases for densities.
 
-starts_environment$gaussian = starts_environment$normal
+starts$gaussian = starts$norm
+starts$normal = starts$norm
+starts$exponential = starts$exp
+starts$lognormal = starts$lnorm
+starts$inverse_gaussian = starts$invgauss
+starts$wald = starts$invgauss
 
-starts_environment$laplace = list(
-  density = function(x, mu, b) {
-    1/(2*b)*exp(-1/b*abs(x-mu))
-  },
-
-  estimator = function(data) {
-
-    mu = median(data)
-    b = mean(abs(data - mu))
-
-    c(mu = mu,
-      b  = b)
-  },
-
-  support   = c(-Inf, Inf)
-)
-
-starts_environment$gumbel = list(
-  density = function(x, loc, scale) {
-      z = 1/scale*(x - loc)
-      1/scale*exp(-(z + exp(-z)))
-  },
-  estimator = mlgumbel,
-  support   = c(-Inf, Inf)
-)
-
-starts_environment$exponential = list(
-  density = dexp,
-  estimator = function(data) {
-    c(rate = 1/mean(data))
-  },
-  support   = c(0, Inf)
-)
-
-starts_environment$lognormal = list(
-  density = dlnorm,
-  estimator = function(data) {
-    c(meanlog = mean(log(data)),
-      sdlog   = sd(log(data)))
-  },
-  support   = c(0, Inf)
-)
-
-if(requireNamespace("extraDistr", quietly = TRUE)) {
-  starts_environment$inverse_gaussian = list(
-    density = extraDistr::dwald,
-    estimator = function(data) {
-      c(mu       = mean(data),
-        lambda   = mean(1/data - 1/mean(data)))
-    },
-    support   = c(0, Inf)
-  )
-} else {
-  starts_environment$inverse_gaussian = list(
-    density   = function(x) stop("Package 'extraDistr' required for option 'inverse_gaussian'."),
-    estimator = function(x) stop("Package 'extraDistr' required for option 'inverse_gaussian'."),
-    support   = c(0, Inf)
-  )
+## Make starts_environments with evaled support.
+for(i in seq_along(starts)) {
+  starts[[i]]$support = eval(starts[[i]]$support)
 }
 
-starts_environment$wald = starts_environment$inverse_gaussian
-
-starts_environment$gamma = list(
-  density   = dgamma,
-  estimator = mlgamma,
-  support   = c(0, Inf)
-)
-
-starts_environment$weibull = list(
-  density   = dweibull,
-  estimator = mlweibull,
-  support   = c(0, Inf)
-  )
-
-starts_environment$beta = list(
-  density   = dbeta,
-  estimator = mlbeta,
-  support   = c(0, 1)
-)
-
-if(requireNamespace("extraDistr", quietly = TRUE)) {
-  starts_environment$kumar = list(
-    density   = extraDistr::dkumar,
-    estimator = mlkumar,
-    support   = c(0, 1)
-  )
-} else {
-  starts_environment$kumar = list(
-    density   = function(x) stop("Package 'extraDistr' required for option 'kumaraswsamy'."),
-    estimator = function(x) stop("Package 'extraDistr' required for option 'kumaraswsamy'."),
-    support   = c(0, Inf)
-  )
-}
-
-starts_environment$pareto = list(
-  density   = function(x, alpha) alpha*x^(-alpha-1),
-  estimator = function(x) 1/mean(log(x)),
-  support   = c(1, Inf)
-)
+starts_environment = as.environment(starts)
 

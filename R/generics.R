@@ -7,13 +7,18 @@
 
 #' @export
 `[[.kdensity` = function(x, i) {
+  allowed_arg = c("x", "bw_str", "bw", "adjust", "h", "kernel_str", "kernel",
+                  "start", "start_str", "support", "data.name", "n", "range",
+                  "has.na", "na.rm", "normalized", "call", "estimates", "logLik")
+
+  i = match.arg(i, allowed_arg)
   environment(x)[[i]]
 }
 
 #' @export
 `[[<-.kdensity` = function(x, i, value) {
-  allowed_arg = c("x", "bw", "adjust", "kernel", "start", "support",
-                   "na.rm", "normalized")
+  allowed_arg = c("x", "bw", "adjust", "kernel", "start", "support", "na.rm",
+                  "normalized")
 
   i = match.arg(i, allowed_arg)
   environment(x)$obj_name = "x"
@@ -112,18 +117,18 @@ get_range = function(obj) {
   seq(xmin, xmax, length.out = 1000)
 }
 
-#' Plot Method for Kernel Density Estimation
+#' Plot, Lines and Points Methods for Kernel Density Estimation
 #'
-#' The \code{plot} method for \code{kdensity} objects.
+#' The `plot` method for `kdensity` objects.
 #'
 #' @export
-#' @param x a \code{kdensity} object.
+#' @param x a `kdensity` object.
 #' @param range range of x values.
-#' @param plot_start logical; if \code{TRUE}, plots the parametric start instead of the kernel density estimate.
-#' @param zero_line logical; if \code{TRUE}, add a base line at \code{y = 0}.
+#' @param plot_start logical; if `TRUE`, plots the parametric start instead of the kernel density estimate.
+#' @param zero_line logical; if `TRUE`, add a base line at `y = 0`.
 #' @param ... further plotting parameters.
 #' @return None.
-#' @seealso \code{\link{kdensity}}
+#' @seealso [kdensity()]
 #' @examples
 #' ## Using the data set "precip" to eye-ball the similarity between
 #' ## a kernel fit, a parametric fit, and a kernel with parametric start fit.
@@ -135,16 +140,17 @@ get_range = function(obj) {
 #' lines(kde, lty = 3)
 #' rug(precip)
 
-
 plot.kdensity = function(x, range = NULL, plot_start = FALSE, zero_line = TRUE, ...) {
   plot_helper(x, range, plot_start, zero_line, ptype = "plot", ...)
 }
 
+#' @rdname plot.kdensity
 #' @export
 lines.kdensity = function(x, range = NULL, plot_start = FALSE, zero_line = TRUE, ...) {
   plot_helper(x, range, plot_start, zero_line, ptype = "lines", type = "l", ...)
 }
 
+#' @rdname plot.kdensity
 #' @export
 points.kdensity = function(x, range = NULL, plot_start = FALSE, zero_line = TRUE, ...) {
   plot_helper(x, range, plot_start, zero_line, ptype = "points", type = "p", ...)
@@ -155,10 +161,10 @@ points.kdensity = function(x, range = NULL, plot_start = FALSE, zero_line = TRUE
 #' A helper function for the plot methods that does most of the work under
 #' the hood.
 #'
-#' @param x A \code{kdensity} object.
-#' @param range An optional range vector; like \code{x} in \code{plot.default}.
-#' @param plot_start Logical; if \code{TRUE}, plots the parametric start only.
-#' @param zero_line Logical; if \code{TRUE}, adds a line at \code{y = 0}.
+#' @param x A `kdensity` object.
+#' @param range An optional range vector; like `x` in `plot.default`.
+#' @param plot_start Logical; if `TRUE`, plots the parametric start only.
+#' @param zero_line Logical; if `TRUE`, adds a line at `y = 0`.
 #' @param ptype The kind of plot to make
 #' @param ... Passed to plot.default.
 #' @keywords internal

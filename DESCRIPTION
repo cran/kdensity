@@ -2,7 +2,7 @@ Package: kdensity
 Type: Package
 Title: Kernel Density Estimation with Parametric Starts and Asymmetric
         Kernels
-Version: 1.0.1
+Version: 1.1.0
 Author: Jonas Moss, Martin Tveten
 Maintainer: Jonas Moss <jonas.gjertsen@gmail.com>
 Description: Handles univariate non-parametric density estimation with 
@@ -17,14 +17,15 @@ Description: Handles univariate non-parametric density estimation with
     copula kernel of Jones & Henderson (2007) <doi:10.1093/biomet/asm068>.
     User-supplied kernels, parametric starts, and bandwidths are supported.
 License: MIT + file LICENSE
+URL: https://github.com/JonasMoss/kdensity
+BugReports: https://github.com/JonasMoss/kdensity/issues
 Encoding: UTF-8
 LazyData: true
-Suggests: extraDistr, SkewHyperbolic, testthat, covr, EQL, knitr,
-        rmarkdown
-Imports: assertthat
-RoxygenNote: 6.1.1
+Suggests: extraDistr, SkewHyperbolic, testthat, covr, knitr, rmarkdown
+Imports: assertthat, univariateML, EQL
+RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2019-07-11 13:05:58 UTC; jonas
+Packaged: 2020-09-30 07:46:39 UTC; jonas
 Repository: CRAN
-Date/Publication: 2019-07-11 13:43:21 UTC
+Date/Publication: 2020-09-30 09:00:05 UTC
