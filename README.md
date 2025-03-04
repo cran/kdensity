@@ -6,11 +6,6 @@
 [![R build
 status](https://github.com/JonasMoss/kdensity/workflows/R-CMD-check/badge.svg)](https://github.com/JonasMoss/kdensity/actions)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/kdensity)](https://cran.r-project.org/package=kdensity)
-[![Coverage
-Status](https://codecov.io/gh/JonasMoss/kdensity/branch/master/graph/badge.svg)](https://codecov.io/gh/JonasMoss/kdensity?branch=master)
-[![Project Status: Active – The project has reached a stable, usable
-state and is being actively
-developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![DOI](https://zenodo.org/badge/120678148.svg)](https://zenodo.org/badge/latestdoi/120678148)
 
 An `R` package for univariate kernel density estimation with parametric
@@ -105,22 +100,22 @@ sharp boundaries, such as data supported on the positive half-line or
 the unit interval. Currently we support the following asymmetric
 kernels:
 
-  - Jones and Henderson’s *Gaussian copula KDE*, from [Kernel-Type
+  - Jones and Henderson’s *Gaussian copula KDE*, from Kernel-Type
     Density Estimation on the Unit Interval
-    (2007)](https://academic.oup.com/biomet/article-abstract/94/4/977/246269).
+    (2007)).
     This is used for data on the unit interval. The bandwidth selection
     mechanism described in that paper is implemented as well. This
     kernel is called `gcopula`.
 
-  - Chen’s two *beta kernels* from [Beta kernel estimators for density
+  - Chen’s two *beta kernels* from Beta kernel estimators for density
     functions
-    (1999)](https://www.sciencedirect.com/science/article/pii/S0167947399000109).
+    (1999).
     These are used for data supported on the on the unit interval, and
     are called `beta` and `beta_biased`.
 
-  - Chen’s two *gamma kernels* from [Probability Density Function
+  - Chen’s two *gamma kernels* from Probability Density Function
     Estimation Using Gamma Kernels
-    (2000)](https://link.springer.com/article/10.1023/A:1004165218295).
+    (2000).
     These are used for data supported on the positive half-line, and are
     called `gamma` and `gamma_biased`.
 
@@ -192,8 +187,7 @@ Conduct](https://www.contributor-covenant.org/version/1/4/code-of-conduct/).
     (1995): 882-904.](https://projecteuclid.org/euclid.aos/1176324627).
 
   - [Jones, M. C., and D. A. Henderson. “Miscellanea kernel-type density
-    estimation on the unit interval.” Biometrika 94.4 (2007):
-    977-984.](https://academic.oup.com/biomet/article-abstract/94/4/977/246269).
+    estimation on the unit interval.” Biometrika 94.4 (2007):977-984.]
 
   - [Chen, Song Xi. “Probability density function estimation using gamma
     kernels.” Annals of the Institute of Statistical Mathematics 52.3
@@ -201,5 +195,4 @@ Conduct](https://www.contributor-covenant.org/version/1/4/code-of-conduct/).
     471-480.](https://link.springer.com/article/10.1023/A:1004165218295).
 
   - [Chen, Song Xi. “Beta kernel estimators for density functions.”
-    Computational Statistics & Data Analysis 31.2 (1999):
-    131-145.](https://www.sciencedirect.com/science/article/pii/S0167947399000109)
+    Computational Statistics & Data Analysis 31.2 (1999):131-145.]
