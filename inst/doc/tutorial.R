@@ -60,25 +60,6 @@ plot(kde_normal,
 )
 
 ## -----------------------------------------------------------------------------
-skew_hyperbolic <- list(
-  density = SkewHyperbolic::dskewhyp,
-  estimator = function(x) {
-    SkewHyperbolic::skewhypFit(x, printOut = FALSE)$param
-  },
-  support = c(-Inf, Inf)
-)
-
-## ----fig.height = 5, fig.width = 5, fig.align = "center"----------------------
-kde_skewhyp <- kdensity(LH, start = skew_hyperbolic)
-plot(kde_skewhyp,
-  lwd = 2, col = "blue",
-  main = "Lake Huron differences"
-)
-lines(kde_normal)
-lines(kde_skewhyp, plot_start = TRUE, lty = 2, lwd = 2)
-rug(LH)
-
-## -----------------------------------------------------------------------------
 gaussian <- list(
   kernel  = function(y, x, h) dnorm((y - x) / h),
   sd      = 1,
