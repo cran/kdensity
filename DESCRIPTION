@@ -2,7 +2,7 @@ Package: kdensity
 Type: Package
 Title: Kernel Density Estimation with Parametric Starts and Asymmetric
         Kernels
-Version: 1.2.0
+Version: 2.0.0
 Authors@R: c(
     person("Jonas", "Moss", , "jonas.gjertsen@gmail.com", role = c("aut", "cre"), 
       comment = c(ORCID = "0000-0002-6876-6964")),
@@ -24,13 +24,15 @@ URL: https://github.com/JonasMoss/kdensity
 BugReports: https://github.com/JonasMoss/kdensity/issues
 Encoding: UTF-8
 Suggests: extraDistr, testthat, knitr, rmarkdown
-Imports: univariateML
-RoxygenNote: 7.3.2
+Imports: Rcpp, univariateML
+LinkingTo: Rcpp
 VignetteBuilder: knitr
-NeedsCompilation: no
-Packaged: 2026-05-04 15:20:52 UTC; jmoss
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0
+NeedsCompilation: yes
+Packaged: 2026-10-28 12:55:42 UTC; jonas
 Author: Jonas Moss [aut, cre] (ORCID: <https://orcid.org/0000-0002-6876-6964>),
   Martin Tveten [ctb]
 Maintainer: Jonas Moss <jonas.gjertsen@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-05-04 21:10:57 UTC
+Date/Publication: 2026-10-28 14:30:02 UTC

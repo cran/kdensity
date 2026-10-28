@@ -36,11 +36,11 @@ kde$start_str
 kde[["x"]]
 
 ## ----mpg_example_changes, echo = TRUE-----------------------------------------
-kde$bw <- "RHE"
-update(kde, start = "normal")
+kde_updated <- update(kde, start = "normal", bw = "RHE")
+kde_updated
 
 ## -----------------------------------------------------------------------------
-normal <- list(
+my_normal <- list(
   density = dnorm,
   estimator = function(data) {
     c(
@@ -53,14 +53,14 @@ normal <- list(
 
 ## ----fig2, fig.height = 5, fig.width = 5, fig.align = "center"----------------
 LH <- diff(LakeHuron)
-kde_normal <- kdensity(LH, start = "normal")
+kde_normal <- kdensity(LH, start = my_normal)
 plot(kde_normal,
   lwd = 2, col = "black",
   main = "Lake Huron differences"
 )
 
 ## -----------------------------------------------------------------------------
-gaussian <- list(
+my_gaussian <- list(
   kernel  = function(y, x, h) dnorm((y - x) / h),
   sd      = 1,
   support = c(-Inf, Inf)
